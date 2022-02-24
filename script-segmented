@@ -1,0 +1,23 @@
+Hi.
+Apparently shorter videos are preferred, so here goes:
+The vanilla sieve of eros-tha-thu-nees's memory requirement grows with O(n)
+- bad for large N.  Little locality of reference, so no caching. 
+Segmented version of the sieve much better.
+Step 1:  Calculate all primes up to sqrt of n and save in array. Why? See PNT.
+Step 2:  Pick segment size based on memory availability.  
+Step 3:  Mark them off in the usual way, extract and store.
+Step 4:  Repeat Step 3 for all segments.
+
+Here's the code.
+[quick code]
+Test with n = x
+[run]
+It works
+kay, thanks, bye. Like and Subscrible.
+
+---
+
+Why are you still here?  Too short?  You need a better explanation?
+Okay... if that is what you want.
+
+https://forthright48.com/segmented-sieve-of-eratosthenes/

@@ -53,7 +53,7 @@ u32 print_primes(node_t *head)
 	int count = 0;
     while (runner != NULL) 
     {   
-		printf("%lu ", runner->data);		
+		/*printf("%lu ", runner->data);	*/
         runner = runner->next;       
 		count++; 
     }
@@ -107,21 +107,18 @@ void segmented_sieve(char* ptr, u32 low, u32 high, node_t *head)
     {
         p = head->data;
 
-        /* Over the limit yet? */        
+        /* Over the limit yet? */
         if (p * p > high) break;
 
         /* Find the minimum number in [low..high] that is a multiple of p. */
-        lo = ((low + p - 1) / p) * p;
-		/*printf("p=%lu - lo=%lu: ", p, lo);*/
+        lo = ((low + p - 1) / p) * p;		
 
         /* Mark multiples of p in [low..high).  We need to offset the number
            by low, since the segment starts at 0. */
         for (j = lo; j < high; j += p)
         {
             ptr[j-low] = 0;
-			/*printf("%lu ", j);*/
-        }
-		/*printf("\n");*/
+        }		
 
 		/* Move to next prime number. */
 		head = head->next;
@@ -132,17 +129,14 @@ void segmented_sieve(char* ptr, u32 low, u32 high, node_t *head)
 void grab_primes(char* ptr, u32 n, u32 offset, node_t **tail)
 {
     u32 i;
-	/*printf("Grab: ");*/
 	for (i = 0; i < n; i++)
 	{		
-		/*printf("%lu (%lu) = %d  ", i, i + offset, ptr[i]);		*/
 		if (ptr[i])
 		{
 			enqueue(tail, i + offset);
 			
 		}
 	}
-	/*printf("\n");*/
 }
 
 node_t *go(u32 max)
@@ -181,7 +175,6 @@ node_t *go(u32 max)
     /* Keep going while there are segments left. */
     while (low < max)
     {
-		/*printf("\n%lu - %lu\n", low, high);*/
         if (high > max) high = max; /* Ensure upper bound is under max. */
 
 		if (high-low+1>(limit+1)){
@@ -220,4 +213,3 @@ int main(int argc, char *argv[])
 	printf("\nFound %lu.\n", size);
 	return 0;
 }
-

@@ -1,13 +1,15 @@
 CC=gcc
 
-all: primes1 sieve incsieve incsieve2 incsieve3 bettersieve
+all: lists primes1 sieve incsieve incsieve2 incsieve3 bettersieve segmented
+
+lists: lists.c
+	$(CC) -ansi -pedantic -Wall -Werror lists.c -o lists -lm
 
 primes1: primes1.c
 	$(CC) -ansi -pedantic -Wall -Werror primes1.c -o primes1 -lm
 
 sieve: sieve.c
 	$(CC) -ansi -pedantic -Wall -Werror sieve.c -o sieve -lm
-
 
 incsieve: incsieve.c
 	$(CC) -ansi -pedantic -Wall -Werror incsieve.c -o incsieve -lm
@@ -22,6 +24,9 @@ incsieve3: incsieve3.c
 bettersieve: bettersieve.c
 	$(CC) -ansi -pedantic -Wall -Werror bettersieve.c -o bettersieve -lm
 
+segmented: segmented.c
+	$(CC) -ansi -pedantic -Wall -Werror segmented.c -o segmented -lm
+
 clean:
-	rm primes1 sieve incsieve
+	rm primes1 sieve incsieve incsieve2 incsieve3 bettersieve segmented
      

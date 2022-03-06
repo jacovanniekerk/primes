@@ -11,7 +11,7 @@ typedef struct node
 } node_t;
 
 /* Add the new prime to the end of the list. */
-int enqueue(node_t **tail, u32 prime)
+int enqueue(node_t **head, node_t **tail, u32 prime)
 {
 	/* Create a new node. */
 	node_t *element = (node_t *) malloc(sizeof(node_t));
@@ -27,7 +27,7 @@ int enqueue(node_t **tail, u32 prime)
 	/* If tail is empty, then the list is currently empty. */
 	if ((*tail) == NULL)
 	{
-		*tail = element;
+		*tail = *head = element;
 		return 0;
 	}
 	        
@@ -53,7 +53,7 @@ u32 print_primes(node_t *head)
 	int count = 0;
     while (runner != NULL) 
     {   
-		/*printf("%lu ", runner->data);	*/
+		printf("%lu ", runner->data);
         runner = runner->next;       
 		count++; 
     }
@@ -67,7 +67,7 @@ void sieve(char* ptr, u32 size)
 	/* Assume all numbers are prime and then the sieve will mark the 
 	   composites. */
     ptr[0] = ptr[1] = 0;	
-	for(i = 2; i <= size; i++)
+	for(i = 2; i < size; i++)
 	{
 		ptr[i] = 1;
 	}
@@ -75,7 +75,7 @@ void sieve(char* ptr, u32 size)
 	/* Start with the smallest prime number, which is 2. No need to check for 
 	   numbers greater than square root of n as the smaller member of the 
 	   factor-pair would already have marked it. */	   
-	for(i = 2; i * i <= size; i++)
+	for(i = 2; i * i < size; i++)
 	{
 		if(ptr[i])
 		{
@@ -83,7 +83,7 @@ void sieve(char* ptr, u32 size)
 			   thanks to the PNT.  Since all composites are the product of a
 			   unique set of primes, the smallest composite that has NOT yet
 			   been marked off is i*i. */
-			for(j = i * i; j <= size ; j += i)
+			for(j = i * i; j < size ; j += i)
 			{
 				ptr[j] = 0;
 			}
@@ -107,18 +107,18 @@ void segmented_sieve(char* ptr, u32 low, u32 high, node_t *head)
     {
         p = head->data;
 
-        /* Over the limit yet? */
+        /* Over the limit yet? */        
         if (p * p > high) break;
 
-        /* Find the minimum number in [low..high] that is a multiple of p. */
+        /* Find the minimum number in [low..high) that is a multiple of p. */
         lo = ((low + p - 1) / p) * p;		
 
         /* Mark multiples of p in [low..high).  We need to offset the number
            by low, since the segment starts at 0. */
         for (j = lo; j < high; j += p)
         {
-            ptr[j-low] = 0;
-        }		
+            ptr[j-low] = 0;			
+        }	
 
 		/* Move to next prime number. */
 		head = head->next;
@@ -126,15 +126,14 @@ void segmented_sieve(char* ptr, u32 low, u32 high, node_t *head)
 }
 
 
-void grab_primes(char* ptr, u32 n, u32 offset, node_t **tail)
+void grab_primes(char* ptr, u32 n, u32 offset, node_t **head, node_t **tail)
 {
     u32 i;
 	for (i = 0; i < n; i++)
-	{		
+	{				
 		if (ptr[i])
 		{
-			enqueue(tail, i + offset);
-			
+			enqueue(head, tail, i + offset);			
 		}
 	}
 }
@@ -157,15 +156,13 @@ node_t *go(u32 max)
 	   We start by calculating all primes under the square root of max (using
 	   the normal sieve), since we only need to use these to check for primes 
 	   under max. After that we put them into the list. */
-	limit = sqrt(max) + 1;
+	limit = sqrt(max) + 1;	
 	ptr = (char *)malloc(sizeof(char) * (limit + 1));
-	sieve(ptr, limit);
-	ptr[0] = ptr[1] = ptr[2] = 0;
+	sieve(ptr, limit);	
 
-	/* Copy unmarked elements (i.e. primes) into the linked list. */
-	enqueue(&tail, 2);
+	/* Copy unmarked elements (i.e. primes) into the linked list. */	
 	head = tail;
-    grab_primes(ptr, limit, 0, &tail);
+    grab_primes(ptr, limit, 0, &head, &tail);
 
     /* Since we already have a ptr, just use it as the segment size as well.  
        Second segment to traverse is from limit to limit */
@@ -175,16 +172,11 @@ node_t *go(u32 max)
     /* Keep going while there are segments left. */
     while (low < max)
     {
-        if (high > max) high = max; /* Ensure upper bound is under max. */
-
-		if (high-low+1>(limit+1)){
-			printf("problem found");
-		}
-
+        if (high > max) high = max; /* Ensure upper bound is under max. */		
         segmented_sieve(ptr, low, high, head);
-        grab_primes(ptr, high - low, low, &tail);
-
-        /* Move to next segment. */
+        grab_primes(ptr, high - low, low, &head, &tail);
+        
+		/* Move to next segment. */
         low = low + limit;
         high = high + limit;		
     } 
@@ -213,3 +205,4 @@ int main(int argc, char *argv[])
 	printf("\nFound %lu.\n", size);
 	return 0;
 }
+
